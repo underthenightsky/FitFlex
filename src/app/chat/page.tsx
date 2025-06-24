@@ -1,7 +1,7 @@
 "use client"
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
-// import { useForm } from "react-hook-form"
+import { useState } from "react";
 import { z } from "zod"
 import { useUser } from '@clerk/nextjs'
 import { Button } from "@/components/ui/button"
@@ -25,35 +25,24 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {Control,FieldPath,useForm} from "react-hook-form";
-const formSchema = z.object({
- 
-  age: z.number().min(10),
-  height:z.number().min(100),
-  weight:z.number().min(40),
-  injuries:z.string(),
-  fitness_goals:z.string(),
-  workout_days:z.number().min(2),
-  dietary_restrictions:z.string(),
-  fitness_level:z.string(),
-}
-);
+
 
 const   ProfileForm=( ) =>{
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver:zodResolver(formSchema),
-    defaultValues:{
-        age:20,
-        height:160,
-        weight :60,
-        injuries:"None",
-        fitness_goals:"Muscle gain",
-        workout_days:5,
-        dietary_restrictions:"None",
-        fitness_level:"beginner"
-    }
+ 
+const {formData,setFormData}=useState({
+                  age:20,
+                  height:160,
+                  weight :60,
+                  injuries:"None",
+                  fitness_goals:"Muscle gain",
+                  workout_days:5,
+                  dietary_restrictions:"None",
+                  fitness_level:"beginner"
+    })
 
-  })
-  const {  user } = useUser()
+  
+  const {  user } = useUser();
+
  const   OnSubmit=  async (values:z.infer<typeof formSchema>)=>{
      
    
@@ -64,17 +53,17 @@ myHeaders.append("Content-Type", "application/json");
 
 const raw = JSON.stringify({
   "user_id":user?.id,
-  "age": values.age,
-  "height": values.height,
-  "weight": values.weight,
-  "injuries": values.injuries,
-  "fitness_goals":values.fitness_goals,
-  "workout_days": values.workout_days,
-  "dietary_restrictions": values.dietary_restrictions,
-  "fitness_level": values.fitness_level
+  "age": formData.age,
+  "height": formData.height,
+  "weight": formData.weight,
+  "injuries": formData.injuries,
+  "fitness_goals":formData.fitness_goals,
+  "workout_days": formData.workout_days,
+  "dietary_restrictions": formData.dietary_restrictions,
+  "fitness_level": formData.fitness_level
 });
 console.log(raw);
-const requestOptions = {
+const requestOptions={
   method: "POST",
   headers: myHeaders,
   body: raw,
@@ -87,7 +76,8 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
 
   }
 
-  return (
+  return ( //just create a normal form with div and useStates and use some form of type checking and input length checking , test vapi and during production set appropriate frontend url in the http.ts file in convex 
+
     <div className="flex justify-center items-center mb-4">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
@@ -99,13 +89,13 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
           </CardDescription>
         </CardHeader>
       
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(OnSubmit)} >
+  
+      <form  >
         <CardContent> 
           {/* we are having issue with the width we need a 2d layout so we use a grid mx-auto isnt working so lets try to set max width  */}
          <div className="flex flex-row gap-4">
         <FormField
-         control={form.control}
+       
           name="age"
           render={({ ...field }) => (
             <FormItem>
@@ -121,7 +111,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
           )}
         />
         <FormField
-         control={form.control}
+         
           name="height"
           render={({ ...field }) => (
             <FormItem>
@@ -139,7 +129,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
          </div>
          <div className="flex flex-row gap-4 mb-4 mt-4 ">
         <FormField
-         control={form.control}
+        
           name="weight"
           render={({ ...field }) => (
             <FormItem>
@@ -157,7 +147,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
        
         <FormField
        
-         control={form.control}
+         
           name="workout_days"
           render={({ ...field }) => (
             <FormItem>
@@ -175,7 +165,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
         </div>
         <div className= "flex-column space-y-4">
         <FormField
-         control={form.control}
+       
           name="injuries"
           render={({ ...field }) => (
             <FormItem>
@@ -191,7 +181,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
           )}
         />
          <FormField
-         control={form.control}
+        
           name="fitness_goals"
           render={({ ...field }) => (
             <FormItem>
@@ -208,7 +198,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
         />
         
         <FormField
-         control={form.control}
+         
           name="dietary_restrictions"
           render={({ ...field }) => (
             <FormItem>
@@ -224,7 +214,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
           )}
         />
         <FormField
-         control={form.control}
+       
           name="fitness_level"
           render={({ field }) => (
             <FormItem>
@@ -257,7 +247,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
 <CardFooter>
   <div className="hover:bg-indigo-800">
         <Button type="submit"
-        //  onClick={onSubmit()}
+         onClick={()=>{OnSubmit}}
           
          >
           Submit
@@ -267,7 +257,7 @@ await fetch("https://beaming-cobra-603.convex.site/api/generate-program",request
          </CardFooter>
          </div>
       </form>
-    </Form>
+    
     </Card>
     </div>
   )

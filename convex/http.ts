@@ -99,6 +99,7 @@ http.route({
     // Make sure the necessary headers are present
     // for this to be a valid pre-flight request
     const headers = request.headers;
+   
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
@@ -107,7 +108,7 @@ http.route({
       return new Response(null, {
         headers: new Headers({
           // e.g. https://mywebsite.com, configured on your Convex dashboard
-          "Access-Control-Allow-Origin": process.env.CLIENT_ORIGIN!,
+          "Access-Control-Allow-Origin":process.env.CLIENT_ORIGIN!,
           "Access-Control-Allow-Methods": "POST",
           "Access-Control-Allow-Headers": "Content-Type, Digest",
           "Access-Control-Max-Age": "86400",
